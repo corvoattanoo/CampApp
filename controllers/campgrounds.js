@@ -1,4 +1,5 @@
 const Campground = require('../models/campground')
+const {cloudinary} = require('../cloudinary/index')
 
 module.exports.index = async(req, res, next) => {
     const campgrounds = await Campground.find({}) 
@@ -11,8 +12,10 @@ module.exports.renderNewForm = (req, res) => {
 
 module.exports.createCampground = async (req,res, next) => {
     const campground = new Campground(req.body.campground)
+    campground.images = req.files.map(f => ({url: f.path, filename: f.filename}))
     campground.author = req.user._id
     await campground.save()
+    console.log(campground)
     req.flash('success', 'successfully made a new campground!')
     res.redirect(`/campgrounds/${campground._id}`)
 }
@@ -24,7 +27,6 @@ module.exports.showCampground = async(req, res,next) => {
             path: 'author'
         }
     }).populate('author');
-    console.log(campground);
     if(!campground){
         req.flash('error', 'Cannot find that campground')
         return res.redirect('/campgrounds')
@@ -47,6 +49,19 @@ module.exports.updateCampground = async(req, res,next) => {
     const {id} = req.params
     //The spread syntax (...) is used to create a shallow copy of the campground object from req.body.
     const campground = await Campground.findByIdAndUpdate(id, {...req.body.campground})
+    const imgs = req.files.map(f => ({url: f.path, filename: f.filename}))
+    campground.images.push(...imgs)
+    //Bir diziyi push ederken, tamamını tek bir eleman olarak ekler. Bu, campground.images dizisinde iç içe bir yapı oluşmasına neden olur.
+    //campground.images.push(req.files.map(f => ({url: f.path, filename: f.filename}))) 
+    await campground.save()
+    if(req.body.deleteImages){
+        for(let filename of req.body.deleteImages){
+            await cloudinary.uploader.destroy(filename)
+        }
+        await campground.updateOne({$pull: {images: {filename: {$in: req.body.deleteImages}}}})
+        
+    }
+    console.log(campground)
     req.flash('success', 'Successfully updated campground')
     res.redirect(`/campgrounds/${campground._id}`)
 }
