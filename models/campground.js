@@ -18,6 +18,17 @@ const campgroundSchema = new Schema({
     price: Number,
     description: String,
     location: String,
+    geometry: {
+        type: {
+            type: String, // GeoJSON türü: "Point"
+            enum: ['Point'], // Sadece "Point" türü kabul edilir
+            required: true
+        },
+        coordinates: {
+            type: [Number], // Koordinatlar: [longitude, latitude]
+            required: true
+        }
+    },
     author: {
             type: Schema.Types.ObjectId,
             ref: 'User'
