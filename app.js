@@ -1,6 +1,7 @@
 if(process.env.NODE_ENV !== "production"){
     require('dotenv').config()
 }
+
 //console.log(process.env.SECRET) 
 //console.log(process.env.API_KEY) 
 
@@ -21,7 +22,7 @@ const User = require('./models/user')
 const campgroundRoutes = require('./routes/campgrounds')
 const reviewRoutes = require('./routes/reviews')
 const userRoutes = require('./routes/users')
-const campground = require('./models/campground')
+const mongoSanitize = require('express-mongo-sanitize');
 
 mongoose.connect('mongodb://127.0.0.1:27017/camp-app');
 const db = mongoose.connection;
@@ -42,6 +43,7 @@ app.use('/node_modules', express.static(path.join(__dirname, 'node_modules')));
 //ne ise yaradigina bak
 //app.use(express.static('public'))
 app.use(express.static(path.join(__dirname, 'public')))
+app.use(mongoSanitize())
 
 
 //tekrar et session
@@ -67,7 +69,7 @@ passport.serializeUser(User.serializeUser())
 passport.deserializeUser(User.deserializeUser())
 
 app.use((req, res, next) => {
-    //console.log(req.session)
+    //console.log(req.query)
     res.locals.currentUser = req.user;
     res.locals.success = req.flash('success')
     res.locals.error = req.flash('error')
