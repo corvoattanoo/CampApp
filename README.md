@@ -43,11 +43,39 @@ CLOUDINARY_SECRET
 MAPBOX_TOKEN
 
 ---
-## to be continued...
+## Start the Development Server
+
+Run the following command to start the server: node app.js
+The app should now be running at http://localhost:3000/
+
+--------------------------------
+
+## API Endpoints
+
+### Campgrounds
+GET /campgrounds – List all campgrounds
+POST /campgrounds – Create a new campground
+GET /campgrounds/:id – View a single campground
+PUT /campgrounds/:id – Update a campground
+DELETE /campgrounds/:id – Delete a campground
+
+### Reviews
+POST /campgrounds/:id/reviews – Add a review
+DELETE /campgrounds/:id/reviews/:reviewId – Delete a review
+
+### Authentication
+
+GET /register – Registration page
+POST /register – Create a new user
+GET /login – Login page
+POST /login – Authenticate user
+GET /logout – Log out user
 
 # Contact
 
 For any questions, reach out to yigit.3f3@gmail.com.
+
+# Yigit Sozer 42283
 
 
 
